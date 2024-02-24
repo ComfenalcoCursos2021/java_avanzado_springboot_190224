@@ -8,7 +8,7 @@ import com.grupoi.base.dtos.UsuarioDto;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("")
 public class PruebaControlador {
 
 	@GetMapping("getdesdeeclipse")
