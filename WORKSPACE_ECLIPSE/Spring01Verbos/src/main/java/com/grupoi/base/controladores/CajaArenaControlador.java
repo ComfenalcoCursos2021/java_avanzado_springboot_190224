@@ -30,12 +30,11 @@ public class CajaArenaControlador {
 	}
 	
 	@PutMapping("usuario")
-	public ResultadoDto getSaludoPut() throws Exception {
+	public ResultadoDto getSaludoPut()  {
 		
 		ResultadoDto respuesta = new ResultadoDto();
 		respuesta.setExitoso(true);
-		respuesta.setMensaje("<hr /><h1> actualizando un usuario</h1><hr />");
-		throw new Exception("algo fallo");
+		respuesta.setMensaje("<hr /><h1> actualizando un usuario</h1><hr />");		
 		return respuesta;
 	}
 	
