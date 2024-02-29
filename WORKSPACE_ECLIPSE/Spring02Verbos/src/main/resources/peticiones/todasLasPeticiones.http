@@ -36,29 +36,48 @@ PUT http://localhost:8080/usuario
 DELETE http://localhost:8080/usuario
 
 
+
+
+
+
+
+
+
+
+
+
+
 ###  Obtener todos
 GET http://localhost:8080/api/clasificacion
 
 ### obtener uno con parametro en la url
-GET http://localhost:8080/api/clasificacion/conid?id=2
+GET http://localhost:8080/api/clasificacion/conid?id=5
 
 
 ### obtener uno con parametro en la url
-GET http://localhost:8080/api/clasificacion/10
+GET http://localhost:8080/api/clasificacion/4
 
 ### obtener por buscador
-GET http://localhost:8080/api/clasificacion/buscador/asdasd
-
-
+GET http://localhost:8080/api/clasificacion/buscador/ia
 
 ###
 POST http://localhost:8080/api/clasificacion
+Content-Type: application/json
+
+{
+    "nombre" : "Liquidacion"    
+}
+
 
 ###
-PUT http://localhost:8080/api/clasificacion
+PUT http://localhost:8080/api/clasificacion/3
+Content-Type: application/json
 
+{        
+    "nombre" : "Mercado"    
+}
 ###
-DELETE http://localhost:8080/api/clasificacion
+DELETE http://localhost:8080/api/clasificacion/2
 
 
 

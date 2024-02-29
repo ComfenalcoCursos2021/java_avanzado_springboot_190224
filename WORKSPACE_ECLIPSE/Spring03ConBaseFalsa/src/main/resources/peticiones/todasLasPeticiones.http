@@ -1,0 +1,85 @@
+
+
+### Vamos a probar el saludo
+GET  http://localhost:8080/usuario
+
+### Vamos a probar el saludo
+POST http://localhost:8080/usuario
+
+### Vamos a probar el saludo
+PUT http://localhost:8080/usuario
+
+### Vamos a probar el saludo
+DELETE http://localhost:8080/usuario
+
+
+
+
+
+
+
+
+
+
+
+
+###
+GET http://localhost:8080/usuario
+
+###
+POST http://localhost:8080/usuario
+
+###
+PUT http://localhost:8080/usuario
+
+###
+DELETE http://localhost:8080/usuario
+
+
+
+
+
+
+
+
+
+
+
+
+
+###  Obtener todos
+GET http://localhost:8080/api/clasificacion
+
+### obtener uno con parametro en la url
+GET http://localhost:8080/api/clasificacion/conid?id=5
+
+
+### obtener uno con parametro en la url
+GET http://localhost:8080/api/clasificacion/4
+
+### obtener por buscador
+GET http://localhost:8080/api/clasificacion/buscador/ia
+
+###
+POST http://localhost:8080/api/clasificacion
+Content-Type: application/json
+
+{
+    "nombre" : "Liquidacion"    
+}
+
+
+###
+PUT http://localhost:8080/api/clasificacion/3
+Content-Type: application/json
+
+{        
+    "nombre" : "Mercado"    
+}
+###
+DELETE http://localhost:8080/api/clasificacion/2
+
+
+
+
+
