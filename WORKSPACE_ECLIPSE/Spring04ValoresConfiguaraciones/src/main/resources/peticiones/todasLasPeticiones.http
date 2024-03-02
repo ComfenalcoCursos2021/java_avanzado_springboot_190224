@@ -1,3 +1,12 @@
+###
+GET http://localhost:8080/api/echoconf
+
+
+
+
+
+
+
 
 
 ### Vamos a probar el saludo
@@ -44,11 +53,11 @@ DELETE http://localhost:8080/usuario
 
 
 
-###  Obtener todos
-GET http://localhost:8080/api/clasificacion
+
+
 
 ###  Obtener todos
-GET http://localhost:8080/api/clasificacionclon
+GET http://localhost:8080/api/clasificacion
 
 ### obtener uno con parametro en la url
 GET http://localhost:8080/api/clasificacion/conid?id=5

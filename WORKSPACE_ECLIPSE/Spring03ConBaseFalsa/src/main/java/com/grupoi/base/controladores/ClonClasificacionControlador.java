@@ -13,20 +13,21 @@ import com.grupoi.base.dto.ClasificacionDto;
 import com.grupoi.base.falsabase.BaseFalsa;
 
 @RestController
-@RequestMapping("api")
-public class ClasificacionControlador {
-
+@RequestMapping("api/clasificacionclon")
+public class ClonClasificacionControlador {
+	
 	@Autowired
 	public BaseFalsa baseDatos;
 
-	@GetMapping("clasificacion")
+	@GetMapping()
 	public List<ClasificacionDto> getClasificacion() {		
 		return baseDatos.obtenerTodos();
 	}
 
 	
-	@PostMapping("clasificacion")
+	@PostMapping()
 	public ClasificacionDto crearMultiple(@RequestBody ClasificacionDto elNuevo) {
+		
 		var clasificacion = baseDatos.agregar(elNuevo);
 		return clasificacion;
 	}
