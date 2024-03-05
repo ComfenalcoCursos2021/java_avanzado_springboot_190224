@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grupoi.base.dto.ClasificacionDto;
-import com.grupoi.base.falsabase.BaseFalsa;
+import com.grupoi.base.falsabase.BaseSupermercado;
+import com.grupoi.base.falsabase.IBaseDatosMemoria;
 
 @RestController
 @RequestMapping("api/clasificacionclon")
 public class ClonClasificacionControlador {
 	
 	@Autowired
-	public BaseFalsa baseDatos;
+	public IBaseDatosMemoria baseDatos;
 
 	@GetMapping()
 	public List<ClasificacionDto> getClasificacion() {		

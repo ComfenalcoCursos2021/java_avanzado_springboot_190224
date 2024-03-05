@@ -9,26 +9,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.grupoi.base.dto.ClasificacionDto;
-import com.grupoi.base.falsabase.IBaseDatosMemoria;
+import com.grupoi.base.bl.ClasificacionServicio;
+import com.grupoi.base.dtos.ClasificacionDto;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/clasificacion")
 public class ClasificacionControlador {
 
-	@Autowired
-	public IBaseDatosMemoria baseDatos;
+	
+	private ClasificacionServicio servicio;
+	
+	public ClasificacionControlador(ClasificacionServicio servicioDesdeSpringBoot) {
+		this.servicio = servicioDesdeSpringBoot;
+		
+	}
 
-	@GetMapping("clasificacion")
+	@GetMapping()
 	public List<ClasificacionDto> getClasificacion() {		
-		return baseDatos.obtenerTodos();
+		return servicio.obtenerTodos();
 	}
 
 	
-	@PostMapping("clasificacion")
-	public ClasificacionDto crearMultiple(@RequestBody ClasificacionDto elNuevo) {
-		var clasificacion = baseDatos.agregar(elNuevo);
-		return clasificacion;
+	@PostMapping()
+	public ClasificacionDto crear(@RequestBody ClasificacionDto elNuevo) {
+		return servicio.crear(elNuevo);
 	}
 
 

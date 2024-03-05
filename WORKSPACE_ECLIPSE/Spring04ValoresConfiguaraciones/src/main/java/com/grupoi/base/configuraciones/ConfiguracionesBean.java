@@ -1,11 +1,15 @@
 package com.grupoi.base.configuraciones;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
-import com.grupoi.base.dto.ClasificacionDto;
-import com.grupoi.base.falsabase.BaseFalsa;
+import com.grupoi.base.excepciones.ErrorTipoConexionExcepcion;
+import com.grupoi.base.falsabase.BaseFerreteria;
+import com.grupoi.base.falsabase.BaseSupermercado;
+import com.grupoi.base.falsabase.IBaseDatosMemoria;
 
 @Configuration
 public class ConfiguracionesBean {
@@ -13,17 +17,18 @@ public class ConfiguracionesBean {
 	@Value("${grupo.spring.tipoconexion}")
 	private String tipoConexion;
 	
+	@Autowired
+	private Environment env;
+	
 	@Bean
-	public BaseFalsa crearBaseFalsaInstancia() {
+	public IBaseDatosMemoria crearBaseFalsaInstancia() throws ErrorTipoConexionExcepcion {		
 		
-		var b = new BaseFalsa();
-		for (int i = 0; i < 10; i++) {
-			b.agregar(ClasificacionDto
-					.builder()
-					.id(i+10)
-					.nombre("NombreClasificacion"+i)
-					.build());
+		if("FERRETERIA".equals(tipoConexion != null ? tipoConexion.toUpperCase() : "")) {
+			return new BaseFerreteria();
+		} else if ("SUPERMERCADO".equals(tipoConexion != null ? tipoConexion.toUpperCase() : "")) {
+			return new BaseSupermercado();			
 		}
-		return b;
+		throw new ErrorTipoConexionExcepcion(env.getProperty("ErrorTipoConexionExcepcion"));
+		
 	}
 }

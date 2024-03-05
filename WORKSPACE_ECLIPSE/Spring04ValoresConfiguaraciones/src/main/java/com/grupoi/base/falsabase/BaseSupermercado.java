@@ -9,11 +9,11 @@ import com.grupoi.base.dto.ClasificacionDto;
 
 
 //@Component
-public class BaseFalsa {
+public class BaseSupermercado implements IBaseDatosMemoria {
 
 	private List<ClasificacionDto> lista;
 	
-	public BaseFalsa (){
+	public BaseSupermercado (){
 		lista = new ArrayList<ClasificacionDto>();
 		lista.add(ClasificacionDto.builder().id(1).nombre("Electrodomesticos").build());
 		lista.add(ClasificacionDto.builder().id(2).nombre("Jugueteria").build());

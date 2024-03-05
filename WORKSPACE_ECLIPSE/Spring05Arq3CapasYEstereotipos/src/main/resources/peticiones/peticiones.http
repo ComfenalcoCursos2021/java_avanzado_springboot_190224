@@ -1,0 +1,10 @@
+### Lista todos
+GET http://localhost:8080/api/clasificacion
+
+### Crear uno
+POST http://localhost:8080/api/clasificacion
+Content-Type: application/json
+
+{
+   "nombre" : "REMATES" 
+}
