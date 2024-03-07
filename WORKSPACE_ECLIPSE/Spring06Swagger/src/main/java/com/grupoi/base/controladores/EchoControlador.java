@@ -22,6 +22,12 @@ public class EchoControlador {
 				String.valueOf(param);
 	}
 	
-	
+	@GetMapping("/algomas")
+	public String getAlgoMas(@RequestParam String param) {
+		return "Echo desde el elgo mas " + 
+				(new Date()).toString()+
+				" "+
+				String.valueOf(param);
+	}
 	
 }
