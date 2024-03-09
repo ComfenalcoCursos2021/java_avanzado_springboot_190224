@@ -19,6 +19,19 @@ public class ClasificacionDal {
 		return this.repositorio.findAll();
 	}
 	
+	public ClasificacionEntidad buscarPorId(int id) {
+		return this.repositorio.findById(id).get();
+	}
+	public ClasificacionEntidad actualizar(ClasificacionEntidad entidad) {
+		
+		var entidadActualizar = this.repositorio.findById(entidad.getId()).get();
+		
+		entidadActualizar.setNombre(entidad.getNombre());
+		
+		this.repositorio.save(entidadActualizar);
+		return entidadActualizar;
+	}
+	
 	public ClasificacionEntidad guardar(ClasificacionEntidad nuevo) {
 		return this.repositorio.save(nuevo);
 	}
