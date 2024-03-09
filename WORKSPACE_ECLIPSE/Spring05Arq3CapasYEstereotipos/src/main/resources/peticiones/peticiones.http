@@ -6,5 +6,5 @@ POST http://localhost:8080/api/clasificacion
 Content-Type: application/json
 
 {
-   "nombre" : "REMATES" 
+   "nombre" : "REMATES2" 
 }
