@@ -33,6 +33,7 @@ public class ClasificacionDal {
 	}
 	
 	public ClasificacionEntidad guardar(ClasificacionEntidad nuevo) {
-		return this.repositorio.save(nuevo);
+		ClasificacionEntidad registroGuardado =  this.repositorio.save(nuevo);
+		return registroGuardado;
 	}
 }
