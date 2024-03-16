@@ -2,14 +2,17 @@ package com.grupoi.base.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupoi.base.dal.UsuarioDal;
-import com.grupoi.base.dtos.ClasificacionDto;
 import com.grupoi.base.dtos.ResultadoDto;
-import com.grupoi.base.dtos.ResultadoUsuarioDto;
 import com.grupoi.base.dtos.UsuarioDto;
 import com.grupoi.base.entidades.UsuarioEntidad;
 
@@ -19,44 +22,41 @@ public class UsuarioServicio {
 	@Autowired
 	private UsuarioDal usuarioDal;
 	
+	private ObjectMapper mapper = new ObjectMapper();
+	
 	public ResultadoDto<UsuarioDto> guardarUsuario(UsuarioDto usuarioDto) {
 		
-		UsuarioEntidad usuarioEntidadParaGuardar = new UsuarioEntidad();
+		try {
+			UsuarioEntidad usuarioEntidadParaGuardar = new UsuarioEntidad();		
+			usuarioEntidadParaGuardar = mapper.readValue(mapper.writeValueAsString(usuarioDto), UsuarioEntidad.class);		
+			UsuarioEntidad usuarioEntidadGuardado = usuarioDal.guardarUsuarioEnBaseDatos(usuarioEntidadParaGuardar);		
+			UsuarioDto usuarioDtoGuardado = mapper.readValue(mapper.writeValueAsString(usuarioEntidadGuardado), UsuarioDto.class);		
+			return ResultadoDto.<UsuarioDto>ok(usuarioDtoGuardado);
+		} catch(JsonProcessingException e) {
+			return ResultadoDto.<UsuarioDto>todoMal("Las propiedades no pudieron ser asignadas");
+		} catch(Exception e) {
+			return ResultadoDto.<UsuarioDto>todoMal(e.toString());	
+		}
 		
-		usuarioEntidadParaGuardar.setNombre(usuarioDto.getNombre());
-		usuarioEntidadParaGuardar.setApellido(usuarioDto.getApellido());
-		usuarioEntidadParaGuardar.setTelefono(usuarioDto.getTelefono());
-		usuarioEntidadParaGuardar.setDireccion(usuarioDto.getDireccion());		
-		
-		UsuarioEntidad usuarioEntidadGuardado = usuarioDal.guardarUsuarioEnBaseDatos(usuarioEntidadParaGuardar);
-		
-		UsuarioDto usuarioDtoGuardado = new UsuarioDto();
-		
-		usuarioDtoGuardado.setId(usuarioEntidadGuardado.getId());
-		usuarioDtoGuardado.setNombre(usuarioEntidadGuardado.getNombre());
-		usuarioDtoGuardado.setApellido(usuarioEntidadGuardado.getApellido());		
-		usuarioDtoGuardado.setTelefono(usuarioEntidadGuardado.getTelefono());
-		usuarioDtoGuardado.setDireccion(usuarioEntidadGuardado.getDireccion());
-		
-		return ResultadoDto.<UsuarioDto>ok(usuarioDtoGuardado);
 	}
 	
 	public ResultadoDto<List<UsuarioDto>> obtenerTodos() {
+		
+		
+		
 		List<UsuarioEntidad> listaUsuarioEntidad  = usuarioDal.consultarTodos();
 		List<UsuarioDto> listaUsuarioDto = new ArrayList<UsuarioDto>();
 		
-		for(int i = 0; i< listaUsuarioEntidad.size() ; i++) {
-			UsuarioEntidad elemento = listaUsuarioEntidad.get(i); 
-			
+		listaUsuarioDto.addAll(listaUsuarioEntidad.stream().map(e -> {
 			UsuarioDto temporal = new UsuarioDto();
-			temporal.setId(elemento.getId());
-			temporal.setApellido(elemento.getApellido());
-			temporal.setNombre(elemento.getNombre());
-			temporal.setDireccion(elemento.getDireccion());
-			temporal.setTelefono(elemento.getTelefono());
-			
-			listaUsuarioDto.add(temporal);
-		}
+			temporal.setId(e.getId());
+			temporal.setApellido(e.getApellido());
+			temporal.setNombre(e.getNombre());
+			temporal.setDireccion(e.getDireccion());
+			temporal.setTelefono(e.getTelefono());
+			return temporal;
+		}).collect(Collectors.toList()));
+
 		return ResultadoDto.<List<UsuarioDto>>ok(listaUsuarioDto);
 		
 	}
@@ -74,15 +74,16 @@ public class UsuarioServicio {
 		usuarioEntidadParaActulizar.setTelefono(usuarioParaActulizar.getTelefono());
 		usuarioEntidadParaActulizar.setDireccion(usuarioParaActulizar.getDireccion());	
 		
-		boolean respuesta = usuarioDal.actualizar(usuarioEntidadParaActulizar);
-		if(respuesta) {
-			UsuarioEntidad usuarioConsultado = usuarioDal.obtenerPorId(usuarioEntidadParaActulizar.getId());
+		Optional<UsuarioEntidad> optUsuarioEntidadRespuesta = usuarioDal.actualizar(usuarioEntidadParaActulizar);
+		if(optUsuarioEntidadRespuesta.isPresent()) {
+			
+			UsuarioEntidad usuarioActualizado = optUsuarioEntidadRespuesta.get();
 			UsuarioDto usuarioDtoActulizado = new UsuarioDto();
-			usuarioDtoActulizado.setId(usuarioConsultado.getId());
-			usuarioDtoActulizado.setNombre(usuarioConsultado.getNombre());
-			usuarioDtoActulizado.setApellido(usuarioConsultado.getApellido());
-			usuarioDtoActulizado.setDireccion(usuarioConsultado.getDireccion());
-			usuarioDtoActulizado.setTelefono(usuarioConsultado.getTelefono());
+			usuarioDtoActulizado.setId(usuarioActualizado.getId());
+			usuarioDtoActulizado.setNombre(usuarioActualizado.getNombre());
+			usuarioDtoActulizado.setApellido(usuarioActualizado.getApellido());
+			usuarioDtoActulizado.setDireccion(usuarioActualizado.getDireccion());
+			usuarioDtoActulizado.setTelefono(usuarioActualizado.getTelefono());
 			
 			/*ResultadoUsuarioDto respuestaExistosa = new ResultadoUsuarioDto();
 			respuestaExistosa.setOk(true);
@@ -115,9 +116,10 @@ public class UsuarioServicio {
 	}
 	
 	public ResultadoDto<UsuarioDto> obtenerUnUsuario(int id) {
-		UsuarioEntidad usuarioEntidad = usuarioDal.obtenerPorId(id);
+		Optional<UsuarioEntidad> optUsuarioEntidad = usuarioDal.obtenerPorId(id);
 		
-		if(usuarioEntidad != null) {
+		if(optUsuarioEntidad.isPresent()) {
+			UsuarioEntidad usuarioEntidad = optUsuarioEntidad.get();
 			UsuarioDto usuarioDtoEncontrado = new UsuarioDto();
 			usuarioDtoEncontrado.setId(usuarioEntidad.getId());
 			usuarioDtoEncontrado.setNombre(usuarioEntidad.getNombre());

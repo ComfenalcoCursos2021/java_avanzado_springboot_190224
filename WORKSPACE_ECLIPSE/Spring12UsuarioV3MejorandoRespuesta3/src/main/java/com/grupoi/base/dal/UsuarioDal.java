@@ -1,13 +1,13 @@
 package com.grupoi.base.dal;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.grupoi.base.entidades.UsuarioEntidad;
 import com.grupoi.base.repositorios.IUsuarioRepositorio;
-import java.util.Optional;
 
 @Service
 public class UsuarioDal {
@@ -35,8 +35,9 @@ public class UsuarioDal {
 		return false;
 	}
 	
-	public boolean actualizar(UsuarioEntidad losValoresActualizar) {
+	public Optional<UsuarioEntidad> actualizar(UsuarioEntidad losValoresActualizar) {
 		
+		Optional<UsuarioEntidad> optUsuarioActualizado = Optional.empty(); 
 		Optional<UsuarioEntidad> respuestaBaseDatos = conexionUsuarioBaseDatos.findById(losValoresActualizar.getId());
 		if(respuestaBaseDatos.isPresent()) {
 			UsuarioEntidad registroUsuario = respuestaBaseDatos.get();
@@ -45,20 +46,14 @@ public class UsuarioDal {
 			registroUsuario.setDireccion(losValoresActualizar.getDireccion());
 			registroUsuario.setTelefono(losValoresActualizar.getTelefono());
 			UsuarioEntidad usuarioEntidadActualizado = conexionUsuarioBaseDatos.save(registroUsuario);
-			return true;
+			optUsuarioActualizado = Optional.of(usuarioEntidadActualizado);
+			return optUsuarioActualizado;
 		}
 		
-		return false;
+		return optUsuarioActualizado;
 	}
-	public UsuarioEntidad obtenerPorId(int id) {
+	public Optional<UsuarioEntidad> obtenerPorId(int id) {
 		Optional<UsuarioEntidad> respuestaBaseDatos = conexionUsuarioBaseDatos.findById(id);
-		if(respuestaBaseDatos.isPresent()) {
-			return respuestaBaseDatos.get();	
-		} else {
-			return null;
-		}
-		
-		
-		
+		return respuestaBaseDatos;		
 	}
 }
