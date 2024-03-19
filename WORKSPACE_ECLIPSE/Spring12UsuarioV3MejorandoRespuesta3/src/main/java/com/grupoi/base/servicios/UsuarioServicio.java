@@ -1,15 +1,14 @@
 package com.grupoi.base.servicios;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grupoi.base.dal.UsuarioDal;
 import com.grupoi.base.dtos.ResultadoDto;
@@ -41,76 +40,75 @@ public class UsuarioServicio {
 	}
 	
 	public ResultadoDto<List<UsuarioDto>> obtenerTodos() {
-		
-		
-		
-		List<UsuarioEntidad> listaUsuarioEntidad  = usuarioDal.consultarTodos();
-		List<UsuarioDto> listaUsuarioDto = new ArrayList<UsuarioDto>();
-		
-		listaUsuarioDto.addAll(listaUsuarioEntidad.stream().map(e -> {
-			UsuarioDto temporal = new UsuarioDto();
-			temporal.setId(e.getId());
-			temporal.setApellido(e.getApellido());
-			temporal.setNombre(e.getNombre());
-			temporal.setDireccion(e.getDireccion());
-			temporal.setTelefono(e.getTelefono());
-			return temporal;
-		}).collect(Collectors.toList()));
+		try {
+			List<UsuarioEntidad> listaUsuarioEntidad  = usuarioDal.consultarTodos();
+			List<UsuarioDto> listaUsuarioDto = new ArrayList<UsuarioDto>();
+			
+			listaUsuarioDto = 
+					Arrays.asList(mapper.readValue(mapper.writeValueAsString(listaUsuarioEntidad),UsuarioDto[].class));
 
-		return ResultadoDto.<List<UsuarioDto>>ok(listaUsuarioDto);
+			return ResultadoDto.<List<UsuarioDto>>ok(listaUsuarioDto);
+	    } catch(JsonProcessingException e) {
+	        return ResultadoDto.<List<UsuarioDto>>todoMal("Las propiedades no pudieron ser asignadas");
+	    } catch(Exception e) {
+	        return ResultadoDto.<List<UsuarioDto>>todoMal(e.toString());  
+	    }
+		
+		
+		
 		
 	}
-	public boolean borrar(int idParaBorrar) {
+	public ResultadoDto<Boolean> borrar(int idParaBorrar) {
 		boolean respuesta = usuarioDal.borrar(idParaBorrar);
-		return respuesta;
+		return respuesta ? ResultadoDto.<Boolean>ok(true) : ResultadoDto.<Boolean>todoMal("No se pudo borrar el usuario");
 	}
 	
 	public ResultadoDto<UsuarioDto> actualizar(UsuarioDto usuarioParaActulizar) {
 		
-		UsuarioEntidad usuarioEntidadParaActulizar = new UsuarioEntidad();
-		usuarioEntidadParaActulizar.setId(usuarioParaActulizar.getId());
-		usuarioEntidadParaActulizar.setNombre(usuarioParaActulizar.getNombre());
-		usuarioEntidadParaActulizar.setApellido(usuarioParaActulizar.getApellido());
-		usuarioEntidadParaActulizar.setTelefono(usuarioParaActulizar.getTelefono());
-		usuarioEntidadParaActulizar.setDireccion(usuarioParaActulizar.getDireccion());	
+		try {
+			UsuarioEntidad usuarioEntidadParaActulizar = new UsuarioEntidad();		
+			String objetoJson = mapper.writeValueAsString(usuarioParaActulizar);		
+			usuarioEntidadParaActulizar = mapper.readValue(objetoJson, UsuarioEntidad.class);		
+			
+			Optional<UsuarioEntidad> optUsuarioEntidadRespuesta = usuarioDal.actualizar(usuarioEntidadParaActulizar);
+			if(optUsuarioEntidadRespuesta.isPresent()) {
+				
+				UsuarioEntidad usuarioActualizado = optUsuarioEntidadRespuesta.get();
+				objetoJson = mapper.writeValueAsString(usuarioActualizado);
+				UsuarioDto usuarioDtoActulizado = mapper.readValue(objetoJson, UsuarioDto.class);
+				
+				/*ResultadoUsuarioDto respuestaExistosa = new ResultadoUsuarioDto();
+				respuestaExistosa.setOk(true);
+				respuestaExistosa.setUsuario(usuarioDtoActulizado);*/
+				//ResultadoUsuarioDto respuestaExistosa = ResultadoUsuarioDto.todoOk(usuarioDtoActulizado);
+				/*ResultadoDto<UsuarioDto> respuestaExistosa = new ResultadoDto<UsuarioDto>();
+				respuestaExistosa.setOk(true);
+				respuestaExistosa.setDatos(usuarioDtoActulizado);*/
+				ResultadoDto<UsuarioDto> respuestaExistosa = ResultadoDto.<UsuarioDto>ok(usuarioDtoActulizado);
+				respuestaExistosa.setMensaje("USUARIO ACTUALIZADO CORRECTAMENTE");
+				return respuestaExistosa;
+			} else {
+				/*ResultadoUsuarioDto respuestaFallida = new ResultadoUsuarioDto();
+				respuestaFallida.setOk(false);
+				respuestaFallida.setMensaje("EL USUARIO BUSCADO NO EXISTE!!!");*/
+				//ResultadoUsuarioDto respuestaFallida = ResultadoUsuarioDto.todoMal("EL USUARIO BUSCADO NO EXISTE!!!");
+				
+				
+				
+				/*ResultadoDto<UsuarioDto> respuestaFallida = new ResultadoDto<UsuarioDto>();
+				respuestaFallida.setOk(false);
+				respuestaFallida.setMensaje("EL USUARIO NO EXISTE!!!!");*/
+				
+				ResultadoDto<UsuarioDto> respuestaFallida = ResultadoDto.<UsuarioDto>todoMal("UsuarioNoExiste");
+				
+				return respuestaFallida;
+			}
+	    } catch(JsonProcessingException e) {
+	        return ResultadoDto.<UsuarioDto>todoMal("Las propiedades no pudieron ser asignadas");
+	    } catch(Exception e) {
+	        return ResultadoDto.<UsuarioDto>todoMal(e.toString());  
+	    }
 		
-		Optional<UsuarioEntidad> optUsuarioEntidadRespuesta = usuarioDal.actualizar(usuarioEntidadParaActulizar);
-		if(optUsuarioEntidadRespuesta.isPresent()) {
-			
-			UsuarioEntidad usuarioActualizado = optUsuarioEntidadRespuesta.get();
-			UsuarioDto usuarioDtoActulizado = new UsuarioDto();
-			usuarioDtoActulizado.setId(usuarioActualizado.getId());
-			usuarioDtoActulizado.setNombre(usuarioActualizado.getNombre());
-			usuarioDtoActulizado.setApellido(usuarioActualizado.getApellido());
-			usuarioDtoActulizado.setDireccion(usuarioActualizado.getDireccion());
-			usuarioDtoActulizado.setTelefono(usuarioActualizado.getTelefono());
-			
-			/*ResultadoUsuarioDto respuestaExistosa = new ResultadoUsuarioDto();
-			respuestaExistosa.setOk(true);
-			respuestaExistosa.setUsuario(usuarioDtoActulizado);*/
-			//ResultadoUsuarioDto respuestaExistosa = ResultadoUsuarioDto.todoOk(usuarioDtoActulizado);
-			/*ResultadoDto<UsuarioDto> respuestaExistosa = new ResultadoDto<UsuarioDto>();
-			respuestaExistosa.setOk(true);
-			respuestaExistosa.setDatos(usuarioDtoActulizado);*/
-			ResultadoDto<UsuarioDto> respuestaExistosa = ResultadoDto.<UsuarioDto>ok(usuarioDtoActulizado);
-			respuestaExistosa.setMensaje("USUARIO ACTUALIZADO CORRECTAMENTE");
-			return respuestaExistosa;
-		} else {
-			/*ResultadoUsuarioDto respuestaFallida = new ResultadoUsuarioDto();
-			respuestaFallida.setOk(false);
-			respuestaFallida.setMensaje("EL USUARIO BUSCADO NO EXISTE!!!");*/
-			//ResultadoUsuarioDto respuestaFallida = ResultadoUsuarioDto.todoMal("EL USUARIO BUSCADO NO EXISTE!!!");
-			
-			
-			
-			/*ResultadoDto<UsuarioDto> respuestaFallida = new ResultadoDto<UsuarioDto>();
-			respuestaFallida.setOk(false);
-			respuestaFallida.setMensaje("EL USUARIO NO EXISTE!!!!");*/
-			
-			ResultadoDto<UsuarioDto> respuestaFallida = ResultadoDto.<UsuarioDto>todoMal("UsuarioNoExiste");
-			
-			return respuestaFallida;
-		}
 		
 		
 	}
@@ -120,12 +118,7 @@ public class UsuarioServicio {
 		
 		if(optUsuarioEntidad.isPresent()) {
 			UsuarioEntidad usuarioEntidad = optUsuarioEntidad.get();
-			UsuarioDto usuarioDtoEncontrado = new UsuarioDto();
-			usuarioDtoEncontrado.setId(usuarioEntidad.getId());
-			usuarioDtoEncontrado.setNombre(usuarioEntidad.getNombre());
-			usuarioDtoEncontrado.setApellido(usuarioEntidad.getApellido());
-			usuarioDtoEncontrado.setDireccion(usuarioEntidad.getDireccion());
-			usuarioDtoEncontrado.setTelefono(usuarioEntidad.getTelefono());
+			UsuarioDto usuarioDtoEncontrado = mapper.convertValue(usuarioEntidad, UsuarioDto.class);
 			return ResultadoDto.<UsuarioDto>ok(usuarioDtoEncontrado);
 		}
 		return ResultadoDto.<UsuarioDto>todoMal("Usuario no encontrado");

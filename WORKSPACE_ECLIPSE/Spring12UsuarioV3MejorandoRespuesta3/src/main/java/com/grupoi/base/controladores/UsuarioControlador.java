@@ -41,8 +41,8 @@ public class UsuarioControlador {
 		return resultadoListaUsuarioDto;
 	}
 	@DeleteMapping("/{idParaBorrar}")
-	public boolean borrarUsuario(@PathVariable int idParaBorrar) {
-		boolean respuesta = usuarioServicio.borrar(idParaBorrar);
+	public ResultadoDto<Boolean> borrarUsuario(@PathVariable int idParaBorrar) {
+		ResultadoDto<Boolean> respuesta = usuarioServicio.borrar(idParaBorrar);
 		return respuesta;
 	}
 	
