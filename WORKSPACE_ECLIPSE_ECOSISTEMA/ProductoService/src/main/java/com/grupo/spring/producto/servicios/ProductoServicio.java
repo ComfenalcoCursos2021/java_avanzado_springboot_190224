@@ -5,20 +5,24 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo.spring.producto.clientesremotos.IUsuarioClienteRemoto;
 import com.grupo.spring.producto.dal.ProductoDal;
 import com.grupo.spring.producto.dtos.ProductoDto;
 import com.grupo.spring.producto.dtos.ResultadoDto;
+import com.grupo.spring.producto.dtos.UsuarioDto;
 import com.grupo.spring.producto.entidades.ProductoEntidad;
 
 @Service
-public class ProductoServicio {
-
+public class ProductoServicio {	
+	
 	@Autowired
 	private ProductoDal dal;	
-	private ObjectMapper mapper = new ObjectMapper();	
+	private ObjectMapper mapper = new ObjectMapper();
+	
+	@Autowired
+	private IUsuarioClienteRemoto usuarioServicio;
 	
 	public ResultadoDto<List<ProductoDto>> obtenerTodos() {		
 		List<ProductoDto> lista = mapper.convertValue(dal.obtenerTodos(), List.class);
@@ -53,4 +57,10 @@ public class ProductoServicio {
 		boolean borro = dal.borrar(id);
 		return borro ? ResultadoDto.ok(true) : ResultadoDto.todoMal("No se encontro el producto");
 	}
+	
+	public ResultadoDto<List<UsuarioDto>> obtenerTodosLosUsuarios() {
+		return usuarioServicio.obtenerTodosLosUsuarios();
+	}
+	
+	
 }

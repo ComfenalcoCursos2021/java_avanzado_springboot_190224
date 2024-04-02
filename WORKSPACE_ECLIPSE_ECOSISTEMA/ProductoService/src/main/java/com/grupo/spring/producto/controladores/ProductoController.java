@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo.spring.producto.dtos.ProductoDto;
 import com.grupo.spring.producto.dtos.ResultadoDto;
+import com.grupo.spring.producto.dtos.UsuarioDto;
 import com.grupo.spring.producto.servicios.ProductoServicio;
 
 
@@ -23,6 +24,8 @@ public class ProductoController {
 
 	@Autowired
 	private ProductoServicio servicio;
+	
+	
 	
 	@GetMapping()
 	public ResultadoDto<List<ProductoDto>> obtenerTodos() {
@@ -45,4 +48,10 @@ public class ProductoController {
 	public ResultadoDto<Boolean> borrar(@PathVariable int id) {		
 		return servicio.borrar(id);		
 	}
+	
+	@GetMapping("/listarUsuarios")
+	public ResultadoDto<List<UsuarioDto>> obtenerTodosLosUsuarios() {
+		return servicio.obtenerTodosLosUsuarios();
+	}
+	
 }

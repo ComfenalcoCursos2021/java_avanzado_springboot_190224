@@ -1,0 +1,27 @@
+server:
+  port: 5555
+spring:
+  application:
+    name: PuertaDeEnlaceServer
+  cloud:
+    gateway:
+      mvc:
+        routes:
+        - id: productos
+          uri: lb://PRODUCTOSERVICE
+          predicates:
+          - Path=/api/producto
+        - id: usuarios
+          uri: lb://USUARIOSERVICE
+          predicates:
+          - Path=/api/usuario
+            
+          
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+    fetch-registry: 'true'
+    register-with-eureka: 'true'
+  instance:
+    hostname: localhost  
